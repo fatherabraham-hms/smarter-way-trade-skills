@@ -21,6 +21,7 @@ import { deriveWsUrl, loadContract, validateContract } from "./lib/contract.mjs"
 import { SkillError } from "./lib/cdp.mjs";
 import { buySocketSession } from "./lib/watch-ops.mjs";
 import { emit, formatDollars, mask, run } from "./lib/output.mjs";
+import { failIfNotReady } from "./lib/ready.mjs";
 
 const STAGE = "smoke-socket";
 
@@ -58,6 +59,8 @@ run(STAGE, async () => {
     });
     process.exit(2);
   }
+
+  failIfNotReady(STAGE);
 
   const config = loadConfig();
 

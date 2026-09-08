@@ -14,6 +14,7 @@
 import { loadConfig } from "./lib/config.mjs";
 import { SkillError } from "./lib/cdp.mjs";
 import { emit, formatDollars, run } from "./lib/output.mjs";
+import { failIfNotReady } from "./lib/ready.mjs";
 import { startWatch, validateStartPrice } from "./lib/watch-ops.mjs";
 import { PRICE_ATOMIC } from "./lib/constants.mjs";
 
@@ -67,6 +68,8 @@ run(STAGE, async () => {
     });
     process.exit(1);
   }
+
+  failIfNotReady(STAGE, { requireCredentials: !dryRun });
 
   const config = loadConfig();
 

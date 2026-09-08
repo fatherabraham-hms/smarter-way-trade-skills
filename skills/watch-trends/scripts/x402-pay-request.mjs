@@ -13,6 +13,7 @@
 import { loadConfig } from "./lib/config.mjs";
 import { SkillError } from "./lib/cdp.mjs";
 import { emit, formatDollars, run } from "./lib/output.mjs";
+import { failIfNotReady } from "./lib/ready.mjs";
 import { payRequest } from "./lib/x402.mjs";
 
 const STAGE = "buyer";
@@ -42,6 +43,8 @@ run(STAGE, async () => {
     emit({ ok: false, stage: STAGE, code: "invalid_body", message: "The request body must be valid JSON." });
     process.exit(2);
   }
+
+  failIfNotReady(STAGE, { requireCredentials: !dryRun });
 
   const config = loadConfig();
 

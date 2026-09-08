@@ -35,6 +35,7 @@ import {
   GAP_RECOVERY_EVENT_LIMIT,
 } from "./lib/constants.mjs";
 import { assertWebSocketUrl, ensureStateDir, loadConfig, statePath } from "./lib/config.mjs";
+import { inspectReady } from "./lib/ready.mjs";
 import { inspect as inspectLock, tryAcquire } from "./lib/lock.mjs";
 import { deriveWsUrl, loadContract, recoveryAvailable, validateContract } from "./lib/contract.mjs";
 import { projectRun } from "./lib/costs.mjs";
@@ -911,6 +912,19 @@ class Supervisor {
 
 const args = parseArgs(process.argv.slice(2));
 const config = loadConfig();
+
+const ready = inspectReady();
+if (!ready.ok) {
+  log("refused", {
+    code: ready.code,
+    setup_needed: true,
+    setup_doc: ready.setup_doc,
+    setup_step: ready.setup_step,
+    message: ready.next_action,
+    problems: ready.problems,
+  });
+  process.exit(1);
+}
 
 if (!args.tickers.length && !listWatches().length) {
   log("refused", {

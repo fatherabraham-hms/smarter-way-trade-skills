@@ -1,4 +1,4 @@
-# watch-trends x402 setup — PUBLIC configuration only.
+# watch-trends — PUBLIC configuration only.
 #
 # Copy this file to `config.public` in the same directory, or export these as
 # environment variables. Environment variables always win over this file.

@@ -1,21 +1,21 @@
 #!/usr/bin/env node
 /**
- * Paid DELETE /watches/{ticker}. Costs $0.01.
+ * Paid POST /watches/{ticker}/renew. Costs $0.01.
  *
- * Teardown is a paid call, so stopping a watch has a price. Letting the lease
- * lapse is free but leaves it running for up to the remaining window; this
- * script is for stopping now.
+ * Normally the supervisor does this on schedule; this script exists for manual
+ * recovery when the supervisor was stopped and a lease is about to lapse.
  *
- * Usage: node scripts/stop-watch.mjs <ticker> [--dry-run]
+ * Usage: node scripts/renew-watch.mjs <ticker> [--dry-run]
  */
 
 import { loadConfig } from "./lib/config.mjs";
 import { SkillError } from "./lib/cdp.mjs";
 import { PRICE_ATOMIC } from "./lib/constants.mjs";
 import { emit, formatDollars, run } from "./lib/output.mjs";
-import { stopWatch } from "./lib/watch-ops.mjs";
+import { failIfNotReady } from "./lib/ready.mjs";
+import { renewWatch } from "./lib/watch-ops.mjs";
 
-const STAGE = "stop-watch";
+const STAGE = "renew-watch";
 
 run(STAGE, async () => {
   const argv = process.argv.slice(2);
@@ -23,21 +23,23 @@ run(STAGE, async () => {
   const ticker = argv.find((a) => !a.startsWith("--"));
 
   if (!ticker) {
-    emit({ ok: false, stage: STAGE, code: "usage", message: "Usage: stop-watch.mjs <ticker> [--dry-run]" });
+    emit({ ok: false, stage: STAGE, code: "usage", message: "Usage: renew-watch.mjs <ticker> [--dry-run]" });
     process.exit(2);
   }
 
+  failIfNotReady(STAGE, { requireCredentials: !dryRun });
+
   const config = loadConfig();
   try {
-    const result = await stopWatch({ config, ticker, dryRun });
+    const result = await renewWatch({ config, ticker, dryRun });
     emit({
       ...result,
       stage: STAGE,
       code: result.code || (result.ok ? "ok" : "request_rejected"),
-      cost_usd: formatDollars(PRICE_ATOMIC.start),
+      cost_usd: formatDollars(PRICE_ATOMIC.renew),
       next_action: result.ok
-        ? "The watch is stopped. Send SIGTERM to the supervisor as well if this was the last ticker, so it stops buying sessions."
-        : result.message || "The watch was not stopped.",
+        ? `Lease extended to ${result.watch?.expires_at}.`
+        : result.message || "The renewal was rejected.",
     });
     process.exit(result.ok ? 0 : 1);
   } catch (err) {
