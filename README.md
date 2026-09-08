@@ -1,4 +1,4 @@
-# ABES Trade Skills
+# Smarter Way LLC Trade Skills
 
 An index of portable agent skills for trading and x402 services.
 
