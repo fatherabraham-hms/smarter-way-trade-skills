@@ -204,7 +204,7 @@ variables and are not written into your repository.
 ## Verifying without exposing anything
 
 ```bash
-node scripts/preflight.mjs
+node scripts/ready.mjs
 ```
 
 It reports `{"name": "CDP_WALLET_SECRET", "set": true}` and nothing more. No

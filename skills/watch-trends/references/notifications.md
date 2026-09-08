@@ -1,5 +1,9 @@
 # Getting notified when a signal fires
 
+`/watch-trends` does not require a notifier. Signals are always spooled.
+Prefer an existing OpenClaw / Hermes / Telegram channel; do not start with
+BotFather. See [setup.md](setup.md) for the default path.
+
 ## Three layers, and why
 
 The socket lives in a **detached background process**, not in your chat session. By the

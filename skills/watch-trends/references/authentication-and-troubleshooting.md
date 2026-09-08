@@ -32,9 +32,15 @@ mitigation. Nothing in transit is exposed — the connection is `wss://`.
 
 ## Setup and host errors
 
+`/watch-trends` runs `node scripts/ready.mjs` first. On failure, follow
+[setup.md](setup.md) for the reported `setup_step`. `preflight.mjs` is the same
+gate under the older name.
+
 | Code | What happened | What to do |
 |---|---|---|
-| `node_runtime_missing` | Node is older than 22 | Install Node 22+, rerun preflight |
+| `ok` | Prerequisites passed (`ready.mjs` / `preflight.mjs`) | Continue with status, then doctor before paying |
+| `dest_refused` / `dest_inside_source` / `dest_contains_source` | Install dest is unsafe | Use a directory named `watch-trends` that is not `/`, `$HOME`, or a parent/child of the skill source |
+| `node_runtime_missing` | Node is older than 22 | Install Node 22+, rerun `ready.mjs` |
 | `deps_not_installed` | Pinned packages absent | `npm ci` in the skill directory. Do not fall back to another project's `node_modules`; the buyer must use the audited versions |
 | `state_dir_unwritable` | Cannot write the ledger/spool | Set `WATCHTRENDS_STATE_DIR` to a writable path |
 | `secret_in_public_config` | A secret key was found in `config.public` | It was ignored, not loaded. Remove it and set it in your secret store |

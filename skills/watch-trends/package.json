@@ -1,15 +1,16 @@
 {
-  "name": "watch-trends-x402-setup",
-  "version": "1.0.0",
+  "name": "watch-trends",
+  "version": "1.1.0",
   "private": true,
   "type": "module",
-  "description": "Portable x402 wallet setup and signal delivery skill for watch-trends",
+  "description": "Slash /watch-trends skill: pay for watch-trends signals with x402 and receive them over an outbound WebSocket",
   "engines": {
     "node": ">=22"
   },
   "scripts": {
     "doctor": "node scripts/doctor.mjs",
     "preflight": "node scripts/preflight.mjs",
+    "ready": "node scripts/ready.mjs",
     "status": "node scripts/status.mjs",
     "test": "node --test test/*.test.mjs"
   },
